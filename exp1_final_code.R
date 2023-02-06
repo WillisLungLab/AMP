@@ -12,16 +12,16 @@ betadiv_colors <- c("#EF94A2", "#FB0207")
 deseq2_colors <- c("#FB0207","#EF94A2")
 
 ###Load Data and Arrange###
-pankaj <- read_csv("pankaj_otu_phyloformat.csv")
+pankaj <- read_csv("exp1_oxygen_OTU.csv")
 pankaj <- pankaj %>%
   tibble::column_to_rownames("Name")
 
-pankaj.taxa <- read_csv("pankaj_tax_phyloformat.csv")
+pankaj.taxa <- read_csv("exp1_oxygen_taxa.csv")
 pankaj.taxa <- pankaj.taxa %>%
   tibble::column_to_rownames("Name")
 pankaj.taxa <- as.matrix(pankaj.taxa)
 
-roughmetadata_pankaj <- read_table("pankaj_Metadata.txt")
+roughmetadata_pankaj <- read_table("exp1_oxygen_metadata.txt")
 
 pankaj.sort <- pankaj[,order(colnames(pankaj))]
 md.pankaj <- roughmetadata_pankaj[which(unlist(roughmetadata_pankaj$Name) %in% colnames(pankaj.sort)),]
