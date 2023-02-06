@@ -12,16 +12,16 @@ deseq2_colors <- c("#FB0207","#B3B3B3")
 
 ########Import and sort OTU table########
 
-lyso <- read_csv("OTU_lysozyme_phyloformat.csv")
+lyso <- read_csv("exp2_lysozyme_OTU.csv")
 lyso <- lyso %>%
   tibble::column_to_rownames("Name")
 
-lyso.taxa <- read_csv("OTU_lysozyme_tax_phyloformat.csv")
+lyso.taxa <- read_csv("exp2_lysozyme_taxa.csv")
 lyso.taxa <- lyso.taxa %>%
   tibble::column_to_rownames("Name")
 lyso.taxa <- as.matrix(lyso.taxa)
 
-roughmetadata_lyso <- read_csv("Metadata_lysozyme.csv")
+roughmetadata_lyso <- read_csv("exp2_lysozyme_metadata.csv")
 lyso.sort <- lyso[,order(colnames(lyso))]
 md.lyso <- roughmetadata_lyso[which(unlist(roughmetadata_lyso$Name) %in% colnames(lyso.sort)),]
 ####Changes room air in the metadata to normoxia####
