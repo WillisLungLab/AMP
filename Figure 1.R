@@ -14,19 +14,18 @@ betadiv_colors <- c("#EF94A2", "#FB0207")
 deseq2_colors <- c("#FB0207","#EF94A2")
 
 ###Load Data and Arrange###
-#Load OTU table
+#Load Oxygen OTU table
 pankaj2 <- pankaj2 %>%
   tibble::column_to_rownames("Name")
 
-#Load Taxonomy Table
+#Load Oxygen Taxonomy Table
 pankaj2.taxa <- pankaj2.taxa %>%
   tibble::column_to_rownames("Name")
 #Remove any remaining host contamination
 pankaj2.taxa <- pankaj2.taxa[which(pankaj2.taxa$Phylum != "Cyanobacteria" & pankaj2.taxa$Family != "Mitochondria"),]
 pankaj2.taxa <- as.matrix(pankaj2.taxa)
 
-#Load Metadata
-
+#Load Oxygen Metadata
 pankaj2.sort <- pankaj2[,order(colnames(pankaj2))]
 pankaj2.sort <- pankaj2.sort[row.names(pankaj2.sort) %in% row.names(pankaj2.taxa),]
 md.pankaj2 <- roughmetadata_pankaj2[which(unlist(roughmetadata_pankaj2$Name) %in% colnames(pankaj2.sort)),]
