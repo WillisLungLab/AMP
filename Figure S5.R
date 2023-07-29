@@ -56,7 +56,7 @@ dev.off()
 ########### Weighted UniFrac ###########
 
 ###Load Phylogenetic tree###
-tree <- ape::read.nexus("Exp5_All_Tree.nxs")
+tree <- ape::read.nexus("AMP_All_Tree.nxs")
 
 ###Fix labels in the phylogenetic tree and subset taxonomy to what is found in the tree###
 labels <- as.data.frame(tree[["tip.label"]])
