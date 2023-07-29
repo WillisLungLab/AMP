@@ -43,11 +43,11 @@ ggplot(renyihill2_long,aes(x=Hill,y=Value,group=Name))+
 pca_colors <- c("#FB0207","#B3B3B3")
 deseq2_colors <- c("#FB0207","#EF94A2")
 
-#Load tree compatible OTU table
+#Load lysozyme OTU table for UniFrac
 lyso <- lyso %>%
   tibble::column_to_rownames("Name")
 
-#Load associated taxonomy table
+#Load lysozyme OTU table for UniFrac
 lyso.taxa <- lyso.taxa %>%
   tibble::column_to_rownames("Name")
 lyso.taxa <- as.matrix(lyso.taxa)
