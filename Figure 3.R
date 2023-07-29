@@ -15,17 +15,17 @@ deseq2_colors <- c("#FB0207","#B3B3B3")
 
 ########Import and sort OTU table########
 
-lyso <- read_csv("Exp5_2_Decontam.csv")
+#Load lysozyme OTU table
 lyso <- lyso %>%
   tibble::column_to_rownames("Name")
 
-lyso.taxa <- read_csv("Exp5_2_Decontam_Taxa.csv")
+#Load lysozyme taxonomy table
 lyso.taxa <- lyso.taxa %>%
   tibble::column_to_rownames("Name")
 lyso.taxa <- lyso.taxa[which(lyso.taxa$Phylum != "Cyanobacteria" & lyso.taxa$Family != "Mitochondria"),]
 lyso.taxa <- as.matrix(lyso.taxa)
 
-roughmetadata_lyso <- read_csv("Exp5_2_Metadata.csv")
+#Load lysozyme metadata
 lyso.sort <- lyso[,order(colnames(lyso))]
 lyso.sort <- lyso.sort[row.names(lyso.sort) %in% row.names(lyso.taxa),]
 md.lyso <- roughmetadata_lyso[which(unlist(roughmetadata_lyso$Name) %in% colnames(lyso.sort)),]
