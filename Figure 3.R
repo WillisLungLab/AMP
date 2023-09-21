@@ -7,9 +7,6 @@ library(RColorBrewer)
 library(Maaslin2)
 library(ecole)
 
-#If you used rbiom before this, detach the package now or it'll conflict with other packages
-detach("package:rbiom", unload = TRUE)
-
 pca_colors <- c("#FB0207","#B3B3B3")
 deseq2_colors <- c("#FB0207","#B3B3B3")
 
@@ -89,7 +86,8 @@ richness_est_lyso <- indices %>%
 
 ########################## Figure 3I ###########################
 
-exp5_lyso_signif_feature <- subset_taxa(exp5_lyso_gen_rel_prev, Genus == "Lactobacillus" | Genus == "Staphylococcus"| Genus == "Corynebacterium" | Genus == "Enterobacter" | Genus == "Erwinia" | Genus == "Klebsiella" | Genus == "Romboutsia")
+exp5_lyso_rel_prev <- transform_sample_counts(exp5_lyso_gen_prev, function(x) x / sum(x) )
+exp5_lyso_signif_feature <- subset_taxa(exp5_lyso_rel_prev, Genus == "Lactobacillus" | Genus == "Staphylococcus"| Genus == "Corynebacterium" | Genus == "Enterobacter" | Genus == "Erwinia" | Genus == "Klebsiella" | Genus == "Romboutsia")
 exp5_lyso_signif_otu_feature <- as.data.frame(t(exp5_lyso_signif_feature@otu_table))
 exp5_lyso_signif_meta_feature <- as.data.frame(exp5_lyso_signif_feature@sam_data)
 colnames(exp5_lyso_signif_otu_feature) <- c("OTU001:Lactobacillus","OTU003:Staphylococcus","OTU2274:Klebsiella","OTU428:Corynebacterium","OTU573:Enterobacter","OTU966:Erwinia")
@@ -132,16 +130,16 @@ permanova_pcoa_df <- data.frame(exp5_lyso_meta_rel)
 set.seed(1312)
 permanova_lyso_pcoa <- vegan::adonis2(exp5_lyso_otu_rel ~ SampleType, data = permanova_pcoa_df, method="bray", permutations = 10000)
 
-pairwise_permanova_lyso <- permanova_pairwise(exp5_lyso_otu_rel, grp = permanova_pcoa_df$SampleType, permutations = 10000, method = "bray", padj = "fdr")
+pairwise_permanova_lyso_pcoa <- permanova_pairwise(exp5_lyso_otu_rel, grp = permanova_pcoa_df$SampleType, permutations = 10000, method = "bray", padj = "fdr")
 
 lyso_pcoa_dist <- vegdist(exp5_lyso_otu_rel, method = "bray")
 disp_lyso_pcoa <- betadisper(lyso_pcoa_dist, permanova_pcoa_df$SampleType)
 set.seed(1312)
 permdisp_lyso_pcoa <- permutest(disp_lyso_pcoa, permutations = 10000)
 
-print(permanova_lyso)
-print(pairwise_permanova_lyso)
-print(permdisp_lyso)
+print(permanova_lyso_pcoa)
+print(pairwise_permanova_lyso_pcoa)
+print(permdisp_lyso_pcoa)
 
 
 ########################## Figure 3K ###########################
