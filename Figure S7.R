@@ -4,9 +4,7 @@ library(phyloseq)
 library(DESeq2)
 library(data.table)
 library(RColorBrewer)
-library(mvabund)
 library(Maaslin2)
-library(rbiom)
 
 ########################## Figure S7A ##########################
 
@@ -44,28 +42,28 @@ pca_colors <- c("#FB0207","#B3B3B3")
 deseq2_colors <- c("#FB0207","#EF94A2")
 
 #Load lysozyme OTU table for UniFrac
-lyso <- lyso %>%
+lyso.uni <- lyso.uni %>%
   tibble::column_to_rownames("Name")
 
-#Load lysozyme OTU table for UniFrac
-lyso.taxa <- lyso.taxa %>%
+#Load lysozyme taxonomy table for UniFrac
+lyso.uni.taxa <- lyso.uni.taxa %>%
   tibble::column_to_rownames("Name")
-lyso.taxa <- as.matrix(lyso.taxa)
+lyso.uni.taxa <- as.matrix(lyso.uni.taxa)
 
 #Load Metadata
 
-lyso.sort <- lyso[,order(colnames(lyso))]
-md.lyso <- roughmetadata_lyso[which(unlist(roughmetadata_lyso$Name) %in% colnames(lyso.sort)),]
+lyso.uni.sort <- lyso.uni[,order(colnames(lyso.uni))]
+md.lyso.uni <- roughmetadata_lyso.uni[which(unlist(roughmetadata_lyso.uni$Name) %in% colnames(lyso.uni.sort)),]
 
-md.lyso.sort <- md.lyso[order(unlist(md.lyso$Name)),]
-summary(colSums(lyso.sort[,-1]))
+md.lyso.uni.sort <- md.lyso.uni[order(unlist(md.lyso.uni$Name)),]
+summary(colSums(lyso.uni.sort[,-1]))
 
-md.lyso.sort <- md.lyso.sort %>%
+md.lyso.uni.sort <- md.lyso.uni.sort %>%
   tibble::column_to_rownames("Name")
 
 ###Remove samples with read depth under 1000###
-lyso.sort2 <- lyso.sort[,-c(1,which(colSums(lyso.sort[,-1])<1000))]
-md.lyso.sort2 <- md.lyso.sort[which(md.lyso$Name %in% colnames(lyso.sort2)),]
+lyso.uni.sort2 <- lyso.uni.sort[,-c(1,which(colSums(lyso.uni.sort[,-1])<1000))]
+md.lyso.uni.sort2 <- md.lyso.uni.sort[which(md.lyso.uni$Name %in% colnames(lyso.uni.sort2)),]
 
 ###Removes OTUs not found in any sample###
 gt0 <- function(vec){
@@ -74,8 +72,8 @@ gt0 <- function(vec){
   return(s)
 }
 
-lyso.nsampls <- apply(lyso.sort2, 1, gt0)
-lyso.clean <- lyso.sort2[which(lyso.nsampls>1),]
+lyso.uni.nsampls <- apply(lyso.uni.sort2, 1, gt0)
+lyso.uni.clean <- lyso.uni.sort2[which(lyso.uni.nsampls>1),]
 
 #Load Tree
 tree <- ape::read.nexus("AMP_All_Tree.nxs")
@@ -85,13 +83,13 @@ labels[c('Taxa', 'Name')] <- str_split_fixed(labels$`tree[["tip.label"]]`, ";", 
 newlabel <- gsub("(^')|('$)", "", labels$Name)
 tree[["tip.label"]] <- newlabel
 
-lyso.clean.new <- lyso.clean[row.names(lyso.clean) %in% newlabel,]
-lyso.taxa.new <- lyso.taxa[row.names(lyso.taxa) %in% newlabel,]
+lyso.uni.clean.new <- lyso.uni.clean[row.names(lyso.uni.clean) %in% newlabel,]
+lyso.uni.taxa.new <- lyso.uni.taxa[row.names(lyso.uni.taxa) %in% newlabel,]
 
 ###Create phyloseq object###
-OTU_lyso_withtree = otu_table(lyso.clean.new, taxa_are_rows = TRUE)
-TAX_lyso_withtree = tax_table(lyso.taxa.new)
-samples_lyso_withtree = sample_data(md.lyso.sort2)
+OTU_lyso_withtree = otu_table(lyso.uni.clean.new, taxa_are_rows = TRUE)
+TAX_lyso_withtree = tax_table(lyso.uni.taxa.new)
+samples_lyso_withtree = sample_data(md.lyso.uni.sort2)
 phylo_lyso_withtree <- phy_tree(tree)
 
 exp5_lyso_withtree <- phyloseq(OTU_lyso_withtree, TAX_lyso_withtree, samples_lyso_withtree, phylo_lyso_withtree)
@@ -105,18 +103,15 @@ exp5_lyso_rel_withtree <- transform_sample_counts(exp5_lyso_gen_withtree, functi
 ###Get UniFrac distance and ordinate###
 uni_lyso <- UniFrac(exp5_lyso_rel_withtree, weighted = TRUE)
 
-ord_lyso = ordinate(exp5_lyso_rel, "PCoA", "unifrac", weighted=TRUE)
-betadiv_lyso <- plot_ordination(exp5_lyso_gen_lyso, ord, color="SampleType", shape="SampleType") + theme_bw()
-betadiv_lyso + geom_point(size = 3) + stat_ellipse()
+ord_lyso = ordinate(exp5_lyso_rel_withtree, "PCoA", "unifrac", weighted=TRUE)
 
-
-exp5_lyso_meta <- as.data.frame(exp5_lyso_rel@sam_data)
-exp5_lyso_phylo <- phy_tree(exp5_lyso_rel)
+exp5_lyso_meta_withtree <- as.data.frame(exp5_lyso_rel_withtree@sam_data)
+exp5_lyso_phylo <- phy_tree(exp5_lyso_rel_withtree)
 
 ###Set colors###
-factor_exp5_lyso_withtree <- as.factor(exp5_lyso_meta$SampleType)
-factor_exp5_lys <- ordered(factor_exp5_lyso_withtree, levels = c("HO_LYS","NO_LYS"))
-factor_exp5_veh <- ordered(factor_exp5_lyso_withtree, levels = c("HO_VEH","NO_VEH"))
+factor_exp5_lyso_withtree <- as.factor(exp5_lyso_meta_withtree$SampleType)
+factor_exp5_lys_withtree <- ordered(factor_exp5_lyso_withtree, levels = c("HO_LYS","NO_LYS"))
+factor_exp5_veh_withtree <- ordered(factor_exp5_lyso_withtree, levels = c("HO_VEH","NO_VEH"))
 ellipse_colors_lyso_withtree <- c("#FB0207","#B3B3B3","#FB0207","#B3B3B3")
 factor_exp5_ellipse_lyso_withtree <- ordered(factor_exp5_lyso_withtree, levels = c("HO_LYS","HO_VEH","NO_LYS", "NO_VEH"))
 
@@ -126,10 +121,24 @@ tiff("Figure S7B UniFrac.tif", width=5*dpi, height=5*dpi, res=dpi)
 plot(c(-0.5, 0.8), c(-0.3, 0.4), font = 2, font.lab = 2, xlab="PC1", ylab="PC2", type="n")
 points(ord_lyso$vectors[,1:2], pch = 21, cex = 1.3, bg = pca_colors[factor_exp5_lys_withtree], lwd = 1)
 points(ord_lyso$vectors[,1:2], pch = 21, cex = 1.3, col = pca_colors[factor_exp5_veh_withtree], lwd = 1)
-ordiellipse(ord_lyso$vectors[,1:2], factor_exp5, kind = "se", conf = 0.95,col = pca_colors)
-ordispider(ord$vectors[,1:2], factor_exp5, label = TRUE)
+ordiellipse(ord_lyso$vectors[,1:2], factor_exp5_ellipse_lyso_withtree, kind = "se", conf = 0.95,col = pca_colors)
+ordispider(ord_lyso$vectors[,1:2], factor_exp5_ellipse_lyso_withtree, label = TRUE)
 dev.off()
 
+
+###PERMANOVA and PERMDISP###
+permanova_pcoa_df_withtree <- data.frame(exp5_lyso_meta_withtree)
+set.seed(1312)
+permanova_lyso_pcoa_withtree <- vegan::adonis2(uni_lyso ~ SampleType, data = permanova_pcoa_df_withtree, permutations = 10000)
+
+disp_lyso_pcoa_withtree <- betadisper(uni_lyso, permanova_pcoa_df_withtree$SampleType)
+set.seed(1312)
+permdisp_lyso_pcoa_withtree <- permutest(disp_lyso_pcoa_withtree, permutations = 10000)
+
+print(permanova_lyso_pcoa_withtree)
+print(permdisp_lyso_pcoa_withtree)
+
+                                                  
 
 ########################## Figure S7C ##########################
 
