@@ -48,11 +48,6 @@ ggplot(renyihill2_long,aes(x=Hill,y=Value,group=Name))+
   theme_bw()
 #Save
 
-dpi = 600
-tiff("Figure S5B.tif", width=5*dpi, height=5*dpi, res=dpi)
-plot(renyihill)
-dev.off()
-
 ########### Weighted UniFrac ###########
 
 ###Load Phylogenetic tree###
@@ -74,7 +69,7 @@ samples.with.tree = sample_data(md.pankaj2.sort2)
 phylo <- phy_tree(tree)
 
 exp5_pankaj2_withtree <- phyloseq(OTU, TAX, samples, phylo)
-exp5_pankaj2_withree_gen <- tax_glom(exp5_pankaj2_withtree, taxrank = 'Genus')
+exp5_pankaj2_gen_withtree <- tax_glom(exp5_pankaj2_withtree, taxrank = 'Genus')
 
 ###Plot phylogenetic tree###
 plot_tree(exp5_pankaj2_gen_withtree, nodelabf=nodeplotblank, label.tips="Genus", ladderize="left", color = "Phylum")
@@ -84,11 +79,8 @@ plot_tree(exp5_pankaj2_gen_withtree, nodelabf=nodeplotblank, label.tips="Genus",
 
 exp5_pankaj2_rel_withtree <- transform_sample_counts(exp5_pankaj2_gen_withtree, function(x) x / sum(x) )
 
-uni <- rbiom::UniFrac(exp5_pankaj2_rel_withtree, weighted = TRUE)
-
-ord = ordinate(exp5_pankaj2_re1_withtree, "PCoA", "unifrac", weighted=TRUE)
-betadiv <- plot_ordination(exp5_pankaj2_gen_withtree, ord, color="SampleType", shape="SampleType") + theme_bw()
-betadiv + geom_point(size = 3) + stat_ellipse()
+uni <- phyloseq::UniFrac(exp5_pankaj2_rel_withtree, weighted = TRUE)
+ord = ordinate(exp5_pankaj2_rel_withtree, "PCoA", "unifrac", weighted=TRUE)
 
 exp5_pankaj2_meta_withtree <- as.data.frame(exp5_pankaj2_rel_withtree@sam_data)
 exp5_pankaj2_phylo <- phy_tree(exp5_pankaj2_rel_withtree)
@@ -311,7 +303,7 @@ narm_spiec_plot_pankaj2_NO_nolegend + geom_point(shape = 1,size = 4,colour = "bl
 exp5_pankaj2_meta_df <- as.data.frame(exp5_pankaj2_meta)
 labeled_otus <- exp5_pankaj2_otu
 colnames(labeled_otus) <- exp5_pankaj2_tax$Genus
-mv.combined.df <- data.frame(exp5_pankaj2_meta_df,labeled_otus)
+mv.combined.df <- data.frame(exp5_pankaj2_meta_df[,-c(4)],labeled_otus)
 cor_df <- mv.combined.df[,c(4:7,12,39,93,152,202,207,217)]
 
 
