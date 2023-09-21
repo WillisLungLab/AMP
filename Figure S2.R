@@ -72,11 +72,11 @@ pankaj2.sort.flip.unfilt <- t(pankaj2.sort.unfilt)
 simp_unfilt <- vegan::diversity(pankaj2.sort.flip.unfilt, "simpson")
 shan_unfilt <- vegan::diversity(pankaj2.sort.flip.unfilt, "shannon")
 richness_unfilt <- specnumber(pankaj2.sort.flip.unfilt)
-pielou_unfilt <- shan/log(richness)
+pielou_unfilt <- shan/log(richness_unfilt)
 indices_unfilt <- as.data.frame(cbind(simp_unfilt, shan_unfilt,richness_unfilt,pielou_unfilt))
 colnames(indices_unfilt) <- c("Simpson","Shannon","Species Richness","Pielou")
 
-wilcox_alpha_pankaj2_unfilt <- t(sapply(indices_unfilt, function(x) unlist(kruskal.test(x~md.pankaj2.sort$Treatment)[c("estimate","p.value","statistic","conf.int")])))
+wilcox_alpha_pankaj2_unfilt <- t(sapply(indices_unfilt, function(x) unlist(kruskal.test(x~md.pankaj2.sort.unfilt$Treatment)[c("estimate","p.value","statistic","conf.int")])))
 wilcox_alpha_pankaj2_unfilt
 
 richness_est_pankaj2_unfilt <- indices %>%
@@ -107,7 +107,7 @@ richness_est_pankaj2 <- indices %>%
   )
 
 #Compare Richness of Unfiltered vs Filtered samples
-filt_vs_unfilt <- as.data.frame(cbind(richness_est_pankaj2[c(1:22),3],richness_est_pankaj2[,3]))
+filt_vs_unfilt <- as.data.frame(cbind(richness_est_pankaj2_unfilt[c(1:22),3],richness_est_pankaj2[,3]))
 colnames(filt_vs_unfilt) <- c("Unfiltered","Filtered")
 filt_unfilt_long <- pivot_longer(filt_vs_unfilt, cols = c("Unfiltered","Filtered"), names_to = "microDecon", values_to = "Richness")
 
@@ -182,11 +182,11 @@ lyso.sort.flip.unfilt <- t(lyso.sort.unfilt)
 simp_lyso_unfilt <- vegan::diversity(lyso.sort.flip.unfilt, "simpson")
 shan_lyso_unfilt <- vegan::diversity(lyso.sort.flip.unfilt, "shannon")
 richness_lyso_unfilt <- specnumber(lyso.sort.flip.unfilt)
-pielou_lyso_unfilt <- shan/log(richness)
+pielou_lyso_unfilt <- shan/log(richness_unfilt)
 indices_lyso_unfilt <- as.data.frame(cbind(simp_lyso_unfilt, shan_lyso_unfilt,richness_lyso_unfilt,pielou_lyso_unfilt))
 colnames(indices_lyso_unfilt) <- c("Simpson","Shannon","Species Richness","Pielou")
 
-wilcox_alpha_lyso_unfilt <- t(sapply(indices_unfilt, function(x) unlist(kruskal.test(x~md.lyso.sort$Treatment)[c("estimate","p.value","statistic","conf.int")])))
+wilcox_alpha_lyso_unfilt <- t(sapply(indices_unfilt, function(x) unlist(kruskal.test(x~md.lyso.sort.unfilt$Treatment)[c("estimate","p.value","statistic","conf.int")])))
 wilcox_alpha_lyso_unfilt
 
 richness_est_lyso_unfilt <- indices_lyso %>%
