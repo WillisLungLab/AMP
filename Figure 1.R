@@ -4,7 +4,6 @@ library(phyloseq)
 library(DESeq2)
 library(data.table)
 library(RColorBrewer)
-library(mvabund)
 library(Maaslin2)
 
 ########################## Prepare Data ##########################
@@ -97,6 +96,7 @@ print(sigtab_otu)
 
 ####Pull out specific OTUs###
 
+exp5_pankaj2_rel_prev <- transform_sample_counts(exp5_pankaj2_gen_prev, function(x) x / sum(x) )
 exp5_pankaj2_signif_feature2 <- subset_taxa(exp5_pankaj2_rel_prev, Genus == "Lactobacillus" | Genus == "Staphylococcus" | Genus == "Corynebacterium" | Genus == "Romboutsia")
 exp5_pankaj2_signif_otu_feature2 <- as.data.frame(t(exp5_pankaj2_signif_feature2@otu_table))
 exp5_pankaj2_signif_meta_feature2 <- as.data.frame(exp5_pankaj2_signif_feature2@sam_data)
@@ -122,7 +122,7 @@ exp5_pankaj2_rel_pcoa <- ape::pcoa(exp5_pankaj2_rel_bray)
 exp5_pankaj2_rel_pcoa$values
 
 ###Set colors based on metadata###
-factor_exp5 <- as.factor(exp5_pankaj2_meta$Oxygen)
+factor_exp5 <- as.factor(exp5_pankaj2_meta_rel$Oxygen)
 type_exp5 <- as.numeric(factor_exp5)
 pca_colors <- c("#FB0207","#EF94A2")
 
@@ -144,8 +144,8 @@ disp_pankaj2_pcoa <- betadisper(pankaj2_pcoa_dist, permanova_pcoa_df$Oxygen)
 set.seed(1312)
 permdisp_pankaj2_pcoa <- permutest(disp_pankaj2_pcoa, permutations = 10000)
 
-print(permanova_pankaj2)
-print(permdisp_pankaj2)
+print(permanova_pankaj2_pcoa)
+print(permdisp_pankaj2_pcoa)
 
 
 ########################## Figure 1K ##########################
